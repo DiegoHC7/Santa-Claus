@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            background-image: url('csit.jpg');
+            background-size: 50% auto;
+        }
+
+        .img {
+            display: inline-flex;
+            margin: 3%;
+            margin-left: 8%;
+        }
+
+        .snt,
+        .elfos,
+        .reno {
+            margin-right: 10%;
+
+        }
+
+        .elfos {
+            margin-top: 10%;
+        }
+
+        .imho {
+            border-radius: 5%;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        .imho:hover {
+            transform: scale(1.1);
+        }
+
+        .boton {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 12px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            background-color: green;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            cursor: pointer;
+            margin-left: 32%;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .boton:hover {
+            background-color: #45a049;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+
+        }
+        #log{
+            background-color: aliceblue;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="img">
+        <div class="snt">
+            <img class="imho" src="dormir.jpg" alt="" height="300px" width="300px">
+            <p id="log"></p>
+
+        </div>
+        <div class="elfos">
+            <img class="imho" src="elfos.png" alt="">
+            <button class="boton" onclick="needHelp()">Pedir ayuda</button>
+        </div>
+
+        <div class="reno">
+            <img class="imho" src="reno.png" alt="">
+            <button class="boton" onclick="returnFromVacation()">Reno volvió</button>
+        </div>
+    </div>
+
+    <script>
+        let reindeerCount = 0;
+        let elvesWaiting = 0;
+
+        function log(message) {
+            const logElement = document.getElementById('log');
+            logElement.innerHTML += `${message}<br>`;
+        }
+
+        function startSimulation() {
+            log("Santa Claus está durmiendo...");
+
+            // Simular que los renos regresan de vacaciones después de un tiempo
+            setTimeout(() => {
+                log("¡Todos los renos han vuelto de vacaciones!");
+                reindeerCount = 9;
+                checkConditions();
+            }, 3000);
+        }
+
+        function returnFromVacation() {
+            reindeerCount++;
+            log("Un reno ha vuelto de vacaciones.");
+            checkConditions();
+        }
+
+        function needHelp() {
+            elvesWaiting++;
+            log("Un duende necesita ayuda de Santa Claus.");
+            checkConditions();
+        }
+
+        function checkConditions() {
+            if (reindeerCount === 9) {
+                log("Santa Claus está preparando el trineo y repartiendo los regalos.");
+                setTimeout(() => {
+                    log("Santa Claus ha terminado y está descansando nuevamente.");
+                    reindeerCount = 0;
+                }, 5000);
+            } else if (elvesWaiting >= 3) {
+                log("Santa Claus está ayudando a los duendes con sus problemas.");
+                setTimeout(() => {
+                    log("Santa Claus ha terminado de ayudar a los duendes y está descansando nuevamente.");
+                    elvesWaiting = 0;
+                }, 3000);
+            }
+        }
+
+    </script>
+</body>
+
+</html>
