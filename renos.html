@@ -67,12 +67,10 @@
 </head>
 
 <body>
-
     <div class="img">
         <div class="snt">
-            <img class="imho" src="dormir.jpg" alt="" height="300px" width="300px">
+            <img id="santaImage" class="imho" src="dormir.jpg" alt="" height="300px" width="300px">
             <p id="log"></p>
-
         </div>
         <div class="elfos">
             <img class="imho" src="elfos.png" alt="">
@@ -88,6 +86,7 @@
     <script>
         let reindeerCount = 0;
         let elvesWaiting = 0;
+        let santaImage = document.getElementById('santaImage');
 
         function log(message) {
             const logElement = document.getElementById('log');
@@ -96,6 +95,7 @@
 
         function startSimulation() {
             log("Santa Claus está durmiendo...");
+            santaImage.src = 'dormir.jpg';
 
             // Simular que los renos regresan de vacaciones después de un tiempo
             setTimeout(() => {
@@ -114,26 +114,31 @@
         function needHelp() {
             elvesWaiting++;
             log("Un duende necesita ayuda de Santa Claus.");
+            santaImage.src = 'dormir.jpg';
             checkConditions();
         }
 
         function checkConditions() {
             if (reindeerCount === 9) {
                 log("Santa Claus está preparando el trineo y repartiendo los regalos.");
+                santaImage.src = 'trineo2.jpeg';
                 setTimeout(() => {
                     log("Santa Claus ha terminado y está descansando nuevamente.");
+                    santaImage.src = 'dormir.jpg';
                     reindeerCount = 0;
-                }, 5000);
+                }, 10000);
             } else if (elvesWaiting >= 3) {
                 log("Santa Claus está ayudando a los duendes con sus problemas.");
+                santaImage.src = 'ayudando.jpeg';
                 setTimeout(() => {
                     log("Santa Claus ha terminado de ayudar a los duendes y está descansando nuevamente.");
+                    santaImage.src = 'dormir.jpg';
                     elvesWaiting = 0;
-                }, 3000);
+                }, 10000);
             }
         }
-
     </script>
 </body>
+
 
 </html>
