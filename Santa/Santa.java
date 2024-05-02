@@ -8,6 +8,7 @@ package santa;
  *
  * @author uriel
  */
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.concurrent.*;
@@ -17,71 +18,114 @@ public class Santa {
     private static final int TOTAL_ELVES = 3;
     private int reindeerCount = 0;
     private int elvesWaiting = 0;
-    private JLabel statusLabel;
-    private ImageIcon sleepingSanta;
-    private ImageIcon helpingElves;
-    private ImageIcon preparingSleigh;
+    private JLabel santaLabel, elfLabel, reindeerLabel;
+    private JLabel santaAction, elfAction, reindeerAction;
+    private ImageIcon sleepingSanta, helpingElves, preparingSleigh, elfNeedHelp, reindeerOnVacation, reindeerReturned;
+    private ScheduledExecutorService executor;
 
     public Santa() {
         // Cargar las imágenes
-        sleepingSanta = new ImageIcon("dormir.jpg");
-        helpingElves = new ImageIcon("ayudando.jpeg");
-        preparingSleigh = new ImageIcon("trineo2.jpeg");
-
-        // Crear la GUI
+        sleepingSanta = new ImageIcon(new ImageIcon("C:/Users/uriel/Desktop/Santa/dormir.jpg").getImage().getScaledInstance(400, 400, Image.SCALE_SMOOTH));
+        helpingElves = new ImageIcon(new ImageIcon("C:/Users/uriel/Desktop/Santa/ayudando.jpeg").getImage().getScaledInstance(400, 400, Image.SCALE_SMOOTH));
+        preparingSleigh = new ImageIcon(new ImageIcon("C:/Users/uriel/Desktop/Santa/trineo2.jpeg").getImage().getScaledInstance(400, 400, Image.SCALE_SMOOTH));
+        elfNeedHelp = new ImageIcon(new ImageIcon("C:/Users/uriel/Desktop/Santa/ayuda.jpeg").getImage().getScaledInstance(400, 400, Image.SCALE_SMOOTH));
+        reindeerOnVacation = new ImageIcon(new ImageIcon("C:/Users/uriel/Desktop/Santa/vacaciones.jpeg").getImage().getScaledInstance(400, 400, Image.SCALE_SMOOTH));
+        reindeerReturned = new ImageIcon(new ImageIcon("C:/Users/uriel/Desktop/Santa/regresando.jpeg").getImage().getScaledInstance(400, 400, Image.SCALE_SMOOTH));
+        ImageIcon fondo = new ImageIcon("C:/Users/uriel/Desktop/Santa/fondo.jpg");
+        
+              // Crear la GUI
         JFrame frame = new JFrame("Simulación de Santa Claus");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 400);
+        frame.setSize(600, 600);
 
-        statusLabel = new JLabel("Santa Claus está durmiendo...", sleepingSanta, JLabel.CENTER);
-        frame.getContentPane().add(statusLabel, BorderLayout.CENTER);
+        santaLabel = new JLabel(sleepingSanta);
+        elfLabel = new JLabel(elfNeedHelp);
+        reindeerLabel = new JLabel(reindeerOnVacation);
+
+        santaAction = new JLabel("Santa Claus está durmiendo...");
+        elfAction = new JLabel("Los duendes están trabajando...");
+        reindeerAction = new JLabel("Los renos están de vacaciones...");
+
+        JPanel santaPanel = new JPanel(new BorderLayout());
+        santaPanel.add(santaLabel, BorderLayout.CENTER);
+        santaPanel.add(santaAction, BorderLayout.SOUTH);
+
+        JPanel elfPanel = new JPanel(new BorderLayout());
+        elfPanel.add(elfLabel, BorderLayout.CENTER);
+        elfPanel.add(elfAction, BorderLayout.SOUTH);
+
+        JPanel reindeerPanel = new JPanel(new BorderLayout());
+        reindeerPanel.add(reindeerLabel, BorderLayout.CENTER);
+        reindeerPanel.add(reindeerAction, BorderLayout.SOUTH);
+
+        JPanel panel = new JPanel(new GridLayout(1, 3));
+        panel.add(santaPanel);
+        panel.add(elfPanel);
+        panel.add(reindeerPanel);
+        frame.getContentPane().add(panel, BorderLayout.CENTER);
+
+        JButton endButton = new JButton("Finalizar");
+        endButton.addActionListener(e -> endSimulation());
+        frame.getContentPane().add(endButton, BorderLayout.SOUTH);
 
         frame.setVisible(true);
     }
 
     public void startSimulation() {
-        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+        executor = Executors.newScheduledThreadPool(1);
 
         // Simular que los renos regresan de vacaciones después de un tiempo
-        executor.schedule(() -> {
-            reindeerCount = TOTAL_REINDEER;
-            checkConditions();
-        }, 3, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(() -> {
+            if (reindeerCount < TOTAL_REINDEER) {
+                reindeerCount++;
+                reindeerLabel.setIcon(reindeerReturned);
+                reindeerAction.setText(reindeerCount + " reno(s) ha(n) vuelto de vacaciones.");
+                checkConditions();
+            }
+        }, 0, 3, TimeUnit.SECONDS);
 
         // Simular que los duendes necesitan ayuda después de un tiempo
         executor.scheduleAtFixedRate(() -> {
-            elvesWaiting++;
-            checkConditions();
-        }, 5, 5, TimeUnit.SECONDS);
+            if (elvesWaiting < TOTAL_ELVES) {
+                elvesWaiting++;
+                elfLabel.setIcon(elfNeedHelp);
+                elfAction.setText(elvesWaiting + " duende(s) necesita(n) ayuda.");
+                checkConditions();
+            }
+        }, 0, 5, TimeUnit.SECONDS);
+    }
 
-        // Detener la ejecución después de un minuto y medio
-        executor.schedule(() -> {
-            executor.shutdown();
-        }, 40, TimeUnit.SECONDS);
+    public void endSimulation() {
+        executor.shutdown();
+        santaAction.setText("La simulación ha terminado.");
     }
 
     public synchronized void checkConditions() {
         if (reindeerCount == TOTAL_REINDEER) {
-            statusLabel.setText("Santa Claus está preparando el trineo y repartiendo los regalos.");
-            statusLabel.setIcon(preparingSleigh);
+            santaLabel.setIcon(preparingSleigh);
+            santaAction.setText("Santa Claus está preparando el trineo y repartiendo los regalos.");
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            statusLabel.setText("Santa Claus ha terminado y está descansando nuevamente.");
-            statusLabel.setIcon(sleepingSanta);
+            santaLabel.setIcon(sleepingSanta);
+            santaAction.setText("Santa Claus ha terminado y está descansando nuevamente.");
+            reindeerLabel.setIcon(reindeerOnVacation);
+            reindeerAction.setText("Los renos están de vacaciones.");
             reindeerCount = 0;
-        } else if (elvesWaiting >= TOTAL_ELVES) {
-            statusLabel.setText("Santa Claus está ayudando a los duendes con sus problemas.");
-            statusLabel.setIcon(helpingElves);
+        } else if (elvesWaiting == TOTAL_ELVES) {
+            santaLabel.setIcon(helpingElves);
+            santaAction.setText("Santa Claus está ayudando a los duendes con sus problemas.");
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            statusLabel.setText("Santa Claus ha terminado de ayudar a los duendes y está descansando nuevamente.");
-            statusLabel.setIcon(sleepingSanta);
+            santaLabel.setIcon(sleepingSanta);
+            santaAction.setText("Santa Claus ha terminado de ayudar a los duendes y está descansando nuevamente.");
+            elfLabel.setIcon(elfNeedHelp);
+            elfAction.setText("Los duendes están trabajando...");
             elvesWaiting = 0;
         }
     }
